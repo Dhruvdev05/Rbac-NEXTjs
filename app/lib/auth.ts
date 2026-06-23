@@ -1,5 +1,5 @@
 import { Role, User } from '@prisma/client';
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
 import { cookies } from 'next/headers';
 import { prisma } from './db';
@@ -10,18 +10,30 @@ export const hashPassword = async (password: string) : Promise<string> => {
     return await bcrypt.hash(password, 12);
 }
 
-export const verifyPassword = async (password: string, hashedPassword: string) : Promise<boolean> => {
-    return await bcrypt.compare(password, hashedPassword)
+export const verifyPassword = async (password: string , hashedPassword: string) : Promise<boolean> => {
+    return await bcrypt.compare(password, hashedPassword);
 }
 
-export const genrateToken = (userId: string, role: string) : string => {
-    return jwt.sign({ userId, role }, JWT_SECRET, { expiresIn: '7d' })
+export const generateToken = (userId: string, role: string) : string => {
+    if (!JWT_SECRET) {
+        throw new Error('JWT_SECRET is not defined');
+    }
+
+    return jwt.sign({ userId, role }, JWT_SECRET, { expiresIn: '7d' });
 }
+
 
 export const verifyToken = (token: string) : { userId: string; 
 role: string;
  } => {
-        return jwt.verify(token, JWT_SECRET) as { userId: string }    
+        if (!JWT_SECRET) {
+            throw new Error('JWT_SECRET is not defined');
+        }
+
+        return jwt.verify(token, JWT_SECRET) as {
+             userId: string;
+             role: string 
+            };
 }
 
 export const getCurrentUser = async () :  Promise<User | null> => {
