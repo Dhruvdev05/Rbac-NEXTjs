@@ -8,6 +8,7 @@ export async function POST(request: NextRequest) {
     try{
 const {name, password, email,teamCode} = await request.json();
 
+console.log('Received registration data:', { name, email, teamCode ,password });
 if(!name || !email || !password) {
 return NextResponse.json(
     {
@@ -79,6 +80,8 @@ return NextResponse.json(
         },
         }
     )
+
+    
 
     response.cookies.set('token', token, {
         httpOnly: true,
